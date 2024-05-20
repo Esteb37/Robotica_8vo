@@ -5,17 +5,18 @@
         <!--Puzzlebot Parameters-->
         <arg name="robot_name" default="puzzlebot_1"/>
         <arg name="robot_description_file" default="puzzlebot_jetson_lidar_ed_v1.xacro"/>
-        <arg name="pos_x" default="2.0"/>
-        <arg name="pos_y" default="2.0"/>
+        <arg name="pos_x" default="0.0"/>
+        <arg name="pos_y" default="1.7"/>
         <arg name="pos_theta" default="-1.57"/>
 
 		<arg name="goal_x" default="0"/>
-        <arg name="goal_y" default="-2.5"/>
+        <arg name="goal_y" default="-2.45"/>
+
         <!-- Gazebo Parameters -->
-        <arg name="world_name" default="$(find puzzlebot_gazebo)/worlds/obstacle_avoidance_3.world"/>
+        <arg name="world_name" default="$(find puzzlebot_gazebo)/worlds/obstacle_avoidance_4.world"/>
         <arg name="paused" default="false"/>
         <arg name="use_sim_time" default="true"/>
-        <arg name="gui" default="false"/>
+        <arg name="gui" default="true"/>
         <arg name="headless" default="false"/>
         <arg name="debug" default="false"/>
 
@@ -48,7 +49,7 @@
 		</node>
 
 
-		<node pkg="beginner_tutorials" type="bug0.py" name="bug0" output="screen">
+		<node pkg="beginner_tutorials" type="bug2.py" name="bug2" output="screen">
 			<param name="goal_x" value="$(arg goal_x)" />
 			<param name="goal_y" value="$(arg goal_y)" />
 		</node>

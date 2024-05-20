@@ -58,7 +58,8 @@ class AutonomousNav():
 			rate.sleep()
 
 		hit_distance = 0
-		clockwise = False
+		hit_m = 0
+		hit_b = 0
 
 		################ MAIN LOOP ################
 		while not rospy.is_shutdown():
@@ -84,14 +85,10 @@ class AutonomousNav():
 						print("Too close")
 						self.current_state = "Stop"
 
-					elif closest_range < ao_distance:
+					elif closest_range < ao_distance and abs(closest_angle - self.theta_gtg) <=np.pi/2:
+						print("Avoid obstacle")
 						hit_distance = self.progress()
-						clockwise = abs(closest_angle - self.theta_gtg) <= np.pi/2
 						self.current_state = "AvoidObstacle"
-						if clockwise:
-							print("AvoidObstacleClockwise")
-						else:
-							print("AvoidObstacleCounter")
 					else:
 						v_gtg, w_gtg = self.compute_gtg_control(
 							self.x_target, self.y_target, self.pose_x, self.pose_y, self.pose_theta)
@@ -99,6 +96,7 @@ class AutonomousNav():
 						v_msg.angular.z = w_gtg
 
 				elif self.current_state == 'AvoidObstacle':
+					print(f"theta_AO: {self.theta_AO}, theta_target: {self.theta_gtg}, diff { abs(self.theta_AO - self.theta_gtg)} progress: {self.progress()}, hit_distance: {abs(hit_distance-eps)}\n")
 					if abs(self.theta_AO - self.theta_gtg) < np.pi/2 and  self.progress() < abs(hit_distance - eps):
 						self.current_state = "GoToGoal"
 						print("Going to goal")
@@ -111,7 +109,7 @@ class AutonomousNav():
 						print("Too close")
 						self.current_state = "Stop"
 					else:
-						v_ao, w_ao = self.compute_fw_control(closest_angle, clockwise)
+						v_ao, w_ao = self.compute_ao_control(closest_angle)
 						v_msg.linear.x = v_ao
 						v_msg.angular.z = w_ao
 
@@ -173,19 +171,13 @@ class AutonomousNav():
 		return v, w
 
 
-	def compute_fw_control(self, closest_angle, clockwise):
+	def compute_ao_control(self, closest_angle):
 		self.theta_AO = closest_angle + np.pi/2
-
 		#Limit the angle from -pi to pi
 		self.theta_AO = np.arctan2(np.sin(self.theta_AO), np.cos(self.theta_AO))
 		v = 0.2 # [m/s] Robot's linear velocity while avoiding obstacles
 		kAO = 2.8 # Propotional constant for the angular speed controller
-
-		if clockwise:
-			w = -kAO * self.theta_AO
-		else:
-			w = kAO * self.theta_AO
-
+		w = kAO * self.theta_AO
 		return v, w
 
 	def progress(self):
@@ -197,6 +189,8 @@ class AutonomousNav():
 	def laser_cb(self, msg):
 		self.lidar_msg = msg
 		self.lidar_received = 1
+
+
 
 	def run_cb(self, msg):
 		self.goal_received = msg.data
