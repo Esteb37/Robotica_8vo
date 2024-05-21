@@ -18,7 +18,6 @@ class AutonomousNav():
 		self.x_target = rospy.get_param('/bug0/goal_x', 0) #x position of the goal
 		self.y_target = rospy.get_param('/bug0/goal_y', 0) #y position of the goal
 		eps = rospy.get_param('/bug0/eps', 0.0) #Fat guard epsilon
-		fix_dir = rospy.get_param('/bug0/fix_dir', False) #Fix direction flag
 		clockwise = False
 
 		self.pose_x = 0.0
