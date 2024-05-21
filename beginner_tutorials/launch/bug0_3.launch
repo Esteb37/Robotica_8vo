@@ -11,11 +11,15 @@
 
 		<arg name="goal_x" default="0"/>
         <arg name="goal_y" default="-2.5"/>
+
+		<arg name="eps" default="0.2"/>
+		<arg name="use_jump" default="false"/>
+
         <!-- Gazebo Parameters -->
         <arg name="world_name" default="$(find puzzlebot_gazebo)/worlds/obstacle_avoidance_3.world"/>
         <arg name="paused" default="false"/>
         <arg name="use_sim_time" default="true"/>
-        <arg name="gui" default="true"/>
+        <arg name="gui" default="false"/>
         <arg name="headless" default="false"/>
         <arg name="debug" default="false"/>
 
@@ -51,6 +55,8 @@
 		<node pkg="beginner_tutorials" type="bug0.py" name="bug0" output="screen">
 			<param name="goal_x" value="$(arg goal_x)" />
 			<param name="goal_y" value="$(arg goal_y)" />
+			<param name="eps" value="$(arg eps)" />
+
 		</node>
 
 		<node type="rviz" name="rviz" pkg="rviz" args="-d $(find beginner_tutorials)/rviz/bug0.rviz"/>
